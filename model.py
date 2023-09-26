@@ -1,0 +1,97 @@
+import datetime, playsound, datetime, csv, os
+from const import *
+
+
+class scannerjob:
+    def __init__(self):
+        self.data = set()
+        self.csvname = self.getcsvname()
+        self.currpath = self.getcurrpath()
+        self.filepath = self.getfilename(self.csvname, self.currpath)
+        self.mkdir(self.currpath)
+        self.filestat = self.chkfile(self.filepath)
+        self.ctrl = self.getctrl(self.filestat)
+        self.csvfile = self.openfile()
+        self.csvwriter = self.getcsvwriter()
+
+
+    def slashformat(self, input: str) -> str:
+        return input.replace("\\", "/")
+
+    # datetime
+    def getcsvname(self) -> str:
+        csvname = datetime.datetime.now()
+        csvname = csvname.strftime(CSVNAMEFORMAT)
+        return csvname
+
+    # get current path
+    def getcurrpath(self) -> str:
+        currpath = os.path.dirname(os.path.realpath(__file__))
+        currpath = self.slashformat(currpath)
+        return currpath
+
+    # generate file name
+    def getfilename(self, csvname, currpath: str) -> str:
+        filename = csvname + ".csv"
+        filepath = os.path.join(currpath + "/csv", filename)
+        filepath = self.slashformat(filepath)
+        return filepath
+
+    def mkdir(sef, currpath):
+        # check if file path exists, if not, create csv path
+        if not os.path.exists(currpath + "/csv"):
+            os.mkdir(currpath + "/csv")
+
+    def chkfile(self, filepath):
+        res = os.path.exists(filepath)
+        return res
+
+    def getctrl(self, ifexists):
+        return 'a' if ifexists else 'w'
+
+    def getfields(self, ctrl):
+        return WFIELDS if ctrl == 'w' else AFIELDS
+
+    # play sound file from given folder
+    def play_sound(self, filename: str):
+        playsound.playsound(self.currpath + filename)
+
+    def openfile(self):
+        csvfile = open(self.filepath, self.ctrl, newline='')
+        #self.csvwriter.writerow(self.getfields(self.filestat))
+        self.play_sound("/sound/start.mp3")
+        return csvfile
+
+    def getcsvwriter(self):
+        return csv.writer(self.csvfile)
+
+    def writefile(self, parcelId: str):
+        if len(parcelId) < 5:
+            self.play_sound("/sound/again.mp3")
+        else:
+            if parcelId not in self.data and parcelId.isalnum():
+                try:
+                    self.csvwriter.writerow([parcelId, datetime.datetime.now().strftime(CSVDATEFORMAT)])
+                    self.csvfile.flush()
+                    self.data.add(parcelId)
+                    self.play_sound("/sound/next.mp3")
+                except:
+                    self.play_sound("/sound/exception.mp3")
+            elif parcelId in self.data:
+                self.play_sound("/sound/duplicate.mp3")
+            elif not parcelId.isalnum():
+                self.play_sound("/sound/again.mp3")
+
+    def closensave(self):
+        self.csvfile.flush()
+        self.play_sound("/sound/stopnsave.mp3")
+        self.csvfile.close()
+
+
+if __name__ == '__main__':
+    scannerjob = scannerjob()
+    todayf = scannerjob.getcsvname()
+    currpath = scannerjob.getcurrpath()
+    filename = scannerjob.getfilename(todayf, currpath)
+    print(filename)
+    print(scannerjob.chkfile(filename))
