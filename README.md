@@ -1,5 +1,6 @@
 # scannerGUI
 automated program that scan barcode and output data to csv file
+
 release v1.0: https://github.com/ZianWang-236/scannerGUI/releases/tag/v1
 
 functionality
