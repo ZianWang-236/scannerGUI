@@ -1,22 +1,27 @@
-import datetime, playsound, datetime, csv, os
+import csv
+import datetime
+import os
+import playsound
+
 from const import *
 
 
-class scannerjob:
+class Scannerjob:
     def __init__(self):
-        self.data = set()
+        self.message = ""
+        self.csvfile = None
+        self.ctrl = None
+        self.csvwriter = None
+        self.data = None
         self.csvname = self.getcsvname()
         self.currpath = self.getcurrpath()
         self.filepath = self.getfilename(self.csvname, self.currpath)
         self.mkdir(self.currpath)
         self.filestat = self.chkfile(self.filepath)
-        self.ctrl = self.getctrl(self.filestat)
-        self.csvfile = self.openfile()
-        self.csvwriter = self.getcsvwriter()
 
-
-    def slashformat(self, input: str) -> str:
-        return input.replace("\\", "/")
+    @staticmethod
+    def slashformat(before: str) -> str:
+        return before.replace("\\", "/")
 
     # datetime
     def getcsvname(self) -> str:
@@ -37,7 +42,7 @@ class scannerjob:
         filepath = self.slashformat(filepath)
         return filepath
 
-    def mkdir(sef, currpath):
+    def mkdir(self, currpath):
         # check if file path exists, if not, create csv path
         if not os.path.exists(currpath + "/csv"):
             os.mkdir(currpath + "/csv")
@@ -57,10 +62,24 @@ class scannerjob:
         playsound.playsound(self.currpath + filename)
 
     def openfile(self):
-        csvfile = open(self.filepath, self.ctrl, newline='')
-        #self.csvwriter.writerow(self.getfields(self.filestat))
+        self.data = []
+        self.filestat = self.chkfile(self.filepath)
+        self.ctrl = self.getctrl(self.filestat)
+        self.csvfile = open(self.filepath, self.ctrl, newline='')
+        self.csvwriter = csv.writer(self.csvfile)
+        # self.csvwriter.writerow(self.getfields(self.filestat))
         self.play_sound("/sound/start.mp3")
-        return csvfile
+        # return csvfile
+
+    def gethistory(self):
+        try:
+            with open(self.filepath, 'r', newline='') as f:
+                reader = csv.reader(f)
+                for row in reader:
+                    self.data.append(row[0])
+                print(self.data)
+        except:
+            self.message = "get history failied!"
 
     def getcsvwriter(self):
         return csv.writer(self.csvfile)
@@ -73,7 +92,7 @@ class scannerjob:
                 try:
                     self.csvwriter.writerow([parcelId, datetime.datetime.now().strftime(CSVDATEFORMAT)])
                     self.csvfile.flush()
-                    self.data.add(parcelId)
+                    self.data.append(parcelId)
                     self.play_sound("/sound/next.mp3")
                 except:
                     self.play_sound("/sound/exception.mp3")
@@ -89,7 +108,7 @@ class scannerjob:
 
 
 if __name__ == '__main__':
-    scannerjob = scannerjob()
+    scannerjob = Scannerjob()
     todayf = scannerjob.getcsvname()
     currpath = scannerjob.getcurrpath()
     filename = scannerjob.getfilename(todayf, currpath)
