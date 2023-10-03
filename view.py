@@ -1,8 +1,10 @@
 import sys
+import subprocess
+
+#import PyQt6.QtWidgets.QMainWindow
 from PyQt6.QtWidgets import *
 from PyQt6.QtCore import *
 from PyQt6.QtGui import *
-from PyQt6 import QtTest
 from model import *
 
 
@@ -27,6 +29,23 @@ class MyWindow(QMainWindow):
         custom_font.setFamily("Arial")
         custom_font.setPointSize(16)
         custom_font.setBold(True)
+
+        # menu
+        bar = self.menuBar()
+        menu_file = bar.addMenu('Files')
+
+        open_action = QAction("Open csv location", self)
+        open_action.triggered.connect(self.opencsvloc)
+
+        open_action2 = QAction("Open program location", self)
+        open_action2.triggered.connect(self.openprogloc)
+
+        menu_file.addAction(open_action)
+        menu_file.addAction(open_action2)
+
+        menu_setting = bar.addMenu('Settings')
+        for setting in ["configuration"]:
+            menu_setting.addAction(setting)
 
         # create label widget
         self.msg = QLabel('Scanner program:')
@@ -108,6 +127,11 @@ class MyWindow(QMainWindow):
         self.setLayout(layout)
         self.show()
 
+    def opencsvloc(self):
+        subprocess.Popen(['explorer', r"" + os.path.dirname(os.path.realpath(__file__)) + "\csv"])
+
+    def openprogloc(self):
+        subprocess.Popen(['explorer', r"" + os.path.dirname(os.path.realpath(__file__))])
     def display_update(self):
         parcelId = self.inputbox.text().strip("\n")
         if parcelId not in self.scanner.data:
