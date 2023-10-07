@@ -2,6 +2,9 @@ import csv
 import datetime
 import os
 import playsound
+from win32con import WM_INPUTLANGCHANGEREQUEST
+import win32gui
+import win32api
 
 from const import *
 
@@ -13,6 +16,7 @@ class Scannerjob:
         self.ctrl = None
         self.csvwriter = None
         self.data = None
+        self.chgky()
         self.csvname = self.getcsvname()
         self.currpath = self.getcurrpath()
         self.filepath = self.getfilename(self.csvname, self.currpath)
@@ -22,6 +26,22 @@ class Scannerjob:
     @staticmethod
     def slashformat(before: str) -> str:
         return before.replace("\\", "/")
+
+    def chgky(self):
+        # get window
+        hwnd = win32gui.GetForegroundWindow()
+        #title = win32gui.GetWindowText(hwnd)
+        # get keyboard layout
+        im_list = win32api.GetKeyboardLayoutList()
+        im_list = list(map(hex, im_list))
+        # set to English
+        result = win32api.SendMessage(
+            hwnd,
+            WM_INPUTLANGCHANGEREQUEST,
+            0,
+            0x0409)
+        # if result == 0:
+        #     print('设置英文键盘成功！')
 
     # datetime
     def getcsvname(self) -> str:

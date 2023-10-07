@@ -57,6 +57,12 @@ class MyWindow(QMainWindow):
         #self.countlabel.setStyleSheet("background-color: #ed2b2a;")
         #self.countlabel.setFont(custom_font)
 
+        # search input
+        self.searchin = QLineEdit(self)
+        self.searchin.setPlaceholderText("Search Parcel Id here")
+        self.searchin.setStyleSheet("background-color: lightblue;")
+        self.searchin.setFont(custom_font)
+
         # create input widget
         self.inputbox = QLineEdit(self)
         self.inputbox.setPlaceholderText("Input Barcode Here")
@@ -77,16 +83,9 @@ class MyWindow(QMainWindow):
         self.container.layout().addWidget(self.display)
         self.container.layout().addWidget(self.inputbox)
 
-        # search input
-        self.searchin = QLineEdit(self)
-        self.searchin.setPlaceholderText("Search Parcel Id here")
-        self.searchin.setStyleSheet("background-color: lightblue;")
-        self.searchin.setFont(custom_font)
-
         # total count display
         self.totalcount = QLabel(self)
         self.totalcount.setFont(custom_font)
-
 
         # create control button
         self.startbutton = QPushButton('Start program')
@@ -115,10 +114,10 @@ class MyWindow(QMainWindow):
         # configure layout
         layout = QGridLayout(centralwidget)
         layout.setSpacing(20)
+        layout.addWidget(self.container, 0, 0, 6, 1)
         layout.addWidget(self.msg, 0, 3, 1, 2, alignment=Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(self.countlabel, 1, 2)
         layout.addWidget(self.totalcount, 1, 3)
-        layout.addWidget(self.container, 0, 0, 6, 1)
         layout.addWidget(self.searchin, 2, 3, 1, 2)
         layout.addWidget(self.search, 3, 3, 1, 2)
         layout.addWidget(self.startbutton, 4, 3, 1, 2)
