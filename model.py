@@ -30,18 +30,21 @@ class Scannerjob:
     def chgky(self):
         # get window
         hwnd = win32gui.GetForegroundWindow()
-        #title = win32gui.GetWindowText(hwnd)
         # get keyboard layout
         im_list = win32api.GetKeyboardLayoutList()
         im_list = list(map(hex, im_list))
-        # set to English
-        result = win32api.SendMessage(
-            hwnd,
-            WM_INPUTLANGCHANGEREQUEST,
-            0,
-            0x0409)
-        # if result == 0:
-        #     print('设置英文键盘成功！')
+        exist = set(im_list) and set(KEYLAYOUT)
+        if exist != None:
+            # set to English
+            result = win32api.SendMessage(
+                hwnd,
+                WM_INPUTLANGCHANGEREQUEST,
+                0,
+                exist.pop())
+            print(result)
+            return 0 # switch successful
+        else:
+            return -1 # no workable language layout
 
     # datetime
     def getcsvname(self) -> str:
