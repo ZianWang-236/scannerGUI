@@ -1,4 +1,9 @@
-# scannerGUI
+<p align="center">
+  <img src="https://media1.tenor.com/images/f3300b1ad8320c61263cbd37e1072a7c/tenor.gif?itemid=15501310" alt="scanner pic" width="150" height="150" /> 
+</p>
+
+# ScannerGUI
+
 automated program that scan barcode and output data to csv file
 
 Download:  [release v1.1](https://github.com/ZianWang-236/scannerGUI/releases/tag/v1.1)
