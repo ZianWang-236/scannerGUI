@@ -1,3 +1,5 @@
+import time
+
 import csv
 import datetime
 import os
@@ -11,7 +13,7 @@ from const import *
 
 class Scannerjob:
     def __init__(self):
-        self.message = ""
+        self.message = "message"
         self.csvfile = None
         self.ctrl = None
         self.csvwriter = None
@@ -27,7 +29,7 @@ class Scannerjob:
     def slashformat(before: str) -> str:
         return before.replace("\\", "/")
 
-    def chgky(self):
+    def chgky(self) -> int:
         # get window
         hwnd = win32gui.GetForegroundWindow()
         # get keyboard layout
@@ -41,10 +43,21 @@ class Scannerjob:
                 WM_INPUTLANGCHANGEREQUEST,
                 0,
                 exist.pop())
-            print(result)
+            if DEBUG:
+                print("change keyboard result: " + str(result))
             return 0 # switch successful
         else:
             return -1 # no workable language layout
+
+    def gethistory(self, opt:int = 0):
+        # print(self.currpath)
+        ls = []
+        for filename in os.listdir(self.currpath + "/csv"):
+            f = os.path.join(self.currpath + "/csv/", filename)
+            if os.path.isfile(f):
+                ls.append(time.strptime(filename.strip('.csv'), '%Y-%m-%d'))
+                print(time.strptime(filename.strip('.csv'), '%Y-%m-%d'))
+        print(((time.mktime(ls[-1]) - time.mktime(ls[0]))//(3600*24)))
 
     # datetime
     def getcsvname(self) -> str:
@@ -90,19 +103,20 @@ class Scannerjob:
         self.ctrl = self.getctrl(self.filestat)
         self.csvfile = open(self.filepath, self.ctrl, newline='')
         self.csvwriter = csv.writer(self.csvfile)
+        self.message = "Start"
         # self.csvwriter.writerow(self.getfields(self.filestat))
         self.play_sound("/sound/start.mp3")
         # return csvfile
 
-    def gethistory(self):
-        try:
-            with open(self.filepath, 'r', newline='') as f:
-                reader = csv.reader(f)
-                for row in reader:
-                    self.data.append(row[0])
-                print(self.data)
-        except:
-            self.message = "get history failied!"
+    # def gethistory(self):
+    #     try:
+    #         with open(self.filepath, 'r', newline='') as f:
+    #             reader = csv.reader(f)
+    #             for row in reader:
+    #                 self.data.append(row[0])
+    #             print(self.data)
+    #     except:
+    #         self.message = "get history failied!"
 
     def getcsvwriter(self):
         return csv.writer(self.csvfile)
@@ -116,24 +130,31 @@ class Scannerjob:
                     self.csvwriter.writerow([parcelId, datetime.datetime.now().strftime(CSVDATEFORMAT)])
                     self.csvfile.flush()
                     self.data.append(parcelId)
+                    self.message = "Next"
                     self.play_sound("/sound/next.mp3")
                 except:
+                    self.message = "Exception!!!"
                     self.play_sound("/sound/exception.mp3")
             elif parcelId in self.data:
+                self.message = "Duplicate"
                 self.play_sound("/sound/duplicate.mp3")
             elif not parcelId.isalnum():
+                self.message = "Again"
                 self.play_sound("/sound/again.mp3")
 
     def closensave(self):
         self.csvfile.flush()
+        self.message = "Stop && Save"
         self.play_sound("/sound/stopnsave.mp3")
         self.csvfile.close()
 
 
 if __name__ == '__main__':
     scannerjob = Scannerjob()
-    todayf = scannerjob.getcsvname()
+    #todayf = scannerjob.getcsvname()
     currpath = scannerjob.getcurrpath()
-    filename = scannerjob.getfilename(todayf, currpath)
-    print(filename)
-    print(scannerjob.chkfile(filename))
+    # print(currpath + "/csv")
+    #filename = scannerjob.getfilename(todayf, currpath)
+    scannerjob.gethistory(0)
+
+

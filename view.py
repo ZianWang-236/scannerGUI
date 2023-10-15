@@ -13,124 +13,165 @@ class MyWindow(QMainWindow):
         super().__init__()
         self.scanner = Scannerjob()
         self.scanner.openfile()
-        # self.printstart()
         self.initUi()
+        self.update_msg()
     def initUi(self):
         centralwidget = QWidget(self)
         self.setCentralWidget(centralwidget)
         # create main window
         self.setWindowTitle('Scanner')
-        self.setMinimumSize(600, 375)
+        self.setMinimumSize(1035, 643)
         # self.setMaximumSize(1000, 800)
-        self.setGeometry(550, 220, 780, 470)
+        self.setGeometry(550, 220, 1035, 643)
 
         # set lable font configuration
-        custom_font = QFont()
-        custom_font.setFamily("Arial")
-        custom_font.setPointSize(16)
-        custom_font.setBold(True)
+        uifont = QFont()
+        uifont.setFamily("Arial")
+        uifont.setPointSize(16)
+        uifont.setBold(True)
+
+        # font 2
+        uifontb = QFont()
+        uifontb.setFamily("Arial")
+        uifontb.setPointSize(20)
+        uifontb.setBold(True)
 
         # menu
         bar = self.menuBar()
         menu_file = bar.addMenu('Files')
 
-        open_action = QAction("Open csv location", self)
-        open_action.triggered.connect(self.opencsvloc)
+        opencsv_action = QAction("Open csv location", self)
+        opencsv_action.triggered.connect(self.opencsvloc)
 
-        open_action2 = QAction("Open program location", self)
-        open_action2.triggered.connect(self.openprogloc)
+        opendir_action = QAction("Open program location", self)
+        opendir_action.triggered.connect(self.openprogloc)
 
-        menu_file.addAction(open_action)
-        menu_file.addAction(open_action2)
+        menu_file.addAction(opencsv_action)
+        menu_file.addAction(opendir_action)
 
-        menu_setting = bar.addMenu('Settings')
-        for setting in ["configuration"]:
-            menu_setting.addAction(setting)
-
-        # create label widget
-        self.msg = QLabel('Scanner program:')
-        self.msg.setStyleSheet("background-color: #ed2b2a;")
-        self.msg.setFont(custom_font)
-
-        # total count label
-        self.countlabel = QLabel('Total Count: ')
-        #self.countlabel.setStyleSheet("background-color: #ed2b2a;")
-        #self.countlabel.setFont(custom_font)
-
-        # search input
-        self.searchin = QLineEdit(self)
-        self.searchin.setPlaceholderText("Search Parcel Id here")
-        self.searchin.setStyleSheet("background-color: lightblue;")
-        self.searchin.setFont(custom_font)
-
+        # -----------------------------------------LEFT widgets------------------------------------------
         # create input widget
         self.inputbox = QLineEdit(self)
         self.inputbox.setPlaceholderText("Input Barcode Here")
         self.inputbox.setStyleSheet("background-color: lightblue;")
-        self.inputbox.setFont(custom_font)
+        self.inputbox.setFont(uifont)
         self.inputbox.selectAll()
 
         # create display widget
         self.display = QTextEdit(self)
         self.display.setText("----START!----")
         self.display.setStyleSheet("background-color: #f3d8a2;")
-        self.display.setFont(custom_font)
+        self.display.setFont(uifont)
         self.display.setReadOnly(True)
 
-        # container
-        self.container = QWidget()
-        self.container.setLayout(QVBoxLayout())
-        self.container.layout().addWidget(self.display)
-        self.container.layout().addWidget(self.inputbox)
+        # -----------------------------------------RIGHT widgets------------------------------------------
+        # msg label
+        self.msglabel = QLabel('Scanner program:')
+        # self.msglabel.setStyleSheet("background-color: #ed2b2a;")
+        self.msglabel.setFont(uifont)
+
+        self.msgbox = QLabel()
+        self.msgbox.setText("Messages")
+        self.msgbox.setFont(uifontb)
+
+        # total count label
+        self.countlabel = QLabel('Total Count: ')
+        self.countlabel.setFont(uifont)
 
         # total count display
-        self.totalcount = QLabel(self)
-        self.totalcount.setFont(custom_font)
+        self.totalcount = QLabel()
+        self.totalcount.setFont(uifontb)
+
+        # search input
+        self.searchin = QLineEdit(self)
+        self.searchin.setPlaceholderText("Search Parcel ID here")
+        self.searchin.setStyleSheet("background-color: lightblue;")
+        self.searchin.setFont(uifont)
 
         # create control button
-        self.startbutton = QPushButton('Start program')
-        self.startbutton.setFont(custom_font)
+        self.startbutton = QPushButton('Start')
+        self.startbutton.setFont(uifont)
         self.startbutton.setStyleSheet("background-color: #00d084;")
-        self.endbutton = QPushButton('Stop and Save')
-        self.endbutton.setFont(custom_font)
-        self.endbutton.setStyleSheet("background-color: #f44336;")
+        self.stopbutton = QPushButton('Stop && Save')
+        self.stopbutton.setFont(uifont)
+        self.stopbutton.setStyleSheet("background-color: #f44336;")
         self.search = QPushButton('Search')
-        self.search.setFont(custom_font)
+        self.search.setFont(uifont)
         self.search.setStyleSheet("background-color: #f5d222;")
+
+        # -----------------------------------------containers------------------------------------------
+        # msg container
+        self.containermsglb = QWidget()
+        self.containermsglb.setLayout(QHBoxLayout())
+        self.containermsglb.setStyleSheet("border: 2px solid black")
+        self.containermsglb.layout().addWidget(self.msglabel)
+        self.containermsglb.layout().addWidget(self.msgbox)
+
+        # total count container
+        self.containerttc = QWidget()
+        self.containerttc.setLayout(QHBoxLayout())
+        self.containerttc.setStyleSheet("border: 2px solid black")
+        self.containerttc.layout().addWidget(self.countlabel)
+        self.containerttc.layout().addWidget(self.totalcount)
+
+        # button container search etc
+        self.containerbtn_srh = QWidget()
+        self.containerbtn_srh.setLayout(QVBoxLayout())
+        self.containerbtn_srh.setStyleSheet("border: 2px solid black")
+        self.containerbtn_srh.layout().addWidget(self.searchin)
+        self.containerbtn_srh.layout().addWidget(self.search)
+
+        # button container start and stop
+        self.containerbtn_sns = QWidget()
+        self.containerbtn_sns.setLayout(QHBoxLayout())
+        self.containerbtn_sns.setStyleSheet("border: 2px solid black")
+        self.containerbtn_sns.layout().addWidget(self.startbutton)
+        self.containerbtn_sns.layout().addWidget(self.stopbutton)
+
+        # -----------------------------------------LEFT------------------------------------------
+        self.containerl = QWidget()
+        self.containerl.setLayout(QVBoxLayout())
+        self.containerl.setStyleSheet("border: 2px solid black")
+        self.containerl.layout().addWidget(self.display)
+        self.containerl.layout().addWidget(self.inputbox)
+
+        # -----------------------------------------RIGHT------------------------------------------
+        self.containerr = QWidget()
+        self.containerr.setLayout(QVBoxLayout())
+        self.containerr.setStyleSheet("border: 2px solid black")
+        self.containerr.layout().addWidget(self.containermsglb)
+        self.containerr.layout().addWidget(self.containerttc)
+        self.containerr.layout().addWidget(self.containerbtn_srh)
+        self.containerr.layout().addWidget(self.containerbtn_sns)
 
         # timer
         self.timer = QTimer(self)
-
-        # connect signal to slots
+        # -----------------------------------------connect signal to slots------------------------------------------
         self.startbutton.clicked.connect(self.scanner.openfile)
         self.startbutton.clicked.connect(self.printstart)
         self.inputbox.returnPressed.connect(self.display_update)
         self.inputbox.returnPressed.connect(self.totalcount_update)
-        self.endbutton.clicked.connect(self.scanner.closensave)
-        self.endbutton.clicked.connect(self.printstopnsave)
-        self.endbutton.clicked.connect(self.timerstart)
+        self.inputbox.returnPressed.connect(self.update_msg)
+        self.stopbutton.clicked.connect(self.scanner.closensave)
+        self.stopbutton.clicked.connect(self.printstopnsave)
+        self.stopbutton.clicked.connect(self.timerstart)
         self.timer.timeout.connect(self.timerstop)
-
-        # configure layout
-        layout = QGridLayout(centralwidget)
+        # -----------------------------------------configure layout------------------------------------------
+        layout = QHBoxLayout(centralwidget)
         layout.setSpacing(20)
-        layout.addWidget(self.container, 0, 0, 6, 1)
-        layout.addWidget(self.msg, 0, 3, 1, 2, alignment=Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(self.countlabel, 1, 2)
-        layout.addWidget(self.totalcount, 1, 3)
-        layout.addWidget(self.searchin, 2, 3, 1, 2)
-        layout.addWidget(self.search, 3, 3, 1, 2)
-        layout.addWidget(self.startbutton, 4, 3, 1, 2)
-        layout.addWidget(self.endbutton, 5, 3, 1, 2)
+        layout.addWidget(self.containerl)
+        layout.addWidget(self.containerr)
 
         self.setLayout(layout)
         self.show()
 
+    # -----------------------------------------slots------------------------------------------
     def opencsvloc(self):
         subprocess.Popen(['explorer', r"" + os.path.dirname(os.path.realpath(__file__)) + "\csv"])
 
     def openprogloc(self):
         subprocess.Popen(['explorer', r"" + os.path.dirname(os.path.realpath(__file__))])
+
     def display_update(self):
         parcelId = self.inputbox.text().strip("\n")
         if parcelId not in self.scanner.data:
@@ -159,7 +200,9 @@ class MyWindow(QMainWindow):
         self.totalcount.setText(str(count))
 
     def update_msg(self):
-        self.msg.setText(self.scanner.message)
+        if DEBUG:
+            print(self.scanner.message)
+        self.msgbox.setText(self.scanner.message)
 
 
 if __name__ == '__main__':
