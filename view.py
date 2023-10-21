@@ -53,7 +53,7 @@ class MyWindow(QMainWindow):
         # create input widget
         self.inputbox = QLineEdit(self)
         self.inputbox.setPlaceholderText("Input Barcode Here")
-        self.inputbox.setStyleSheet("background-color: lightblue;")
+        self.inputbox.setStyleSheet("background-color: #B3E5FC;")
         self.inputbox.setFont(uifont)
         self.inputbox.selectAll()
 
@@ -85,7 +85,7 @@ class MyWindow(QMainWindow):
         # search input
         self.searchin = QLineEdit(self)
         self.searchin.setPlaceholderText("Search Parcel ID here")
-        self.searchin.setStyleSheet("background-color: lightblue;")
+        self.searchin.setStyleSheet("background-color: #B3E5FC;")
         self.searchin.setFont(uifont)
 
         # create control button
@@ -98,6 +98,18 @@ class MyWindow(QMainWindow):
         self.search = QPushButton('Search')
         self.search.setFont(uifont)
         self.search.setStyleSheet("background-color: #f5d222;")
+
+        # watch list input
+        self.watchlist = QTextEdit()
+        self.watchlist.setPlaceholderText('Input watch list, seperate with RETURN')
+        self.watchlist.setFont(uifont)
+        self.watchlist.setStyleSheet("background-color: #B3E5FC;")
+        self.watchlist.setCursorWidth(5)
+
+        # watchlist button
+        self.watchlistbutton = QPushButton('Confirm Watchlist')
+        self.watchlistbutton.setStyleSheet("background-color: #F78DA7;")
+        self.watchlistbutton.setFont(uifont)
 
         # -----------------------------------------containers------------------------------------------
         # msg container
@@ -113,6 +125,13 @@ class MyWindow(QMainWindow):
         self.containerttc.setStyleSheet("border: 2px solid black")
         self.containerttc.layout().addWidget(self.countlabel)
         self.containerttc.layout().addWidget(self.totalcount)
+
+        # watchlist container
+        self.watchlistcontainer = QWidget()
+        self.watchlistcontainer.setLayout(QVBoxLayout())
+        self.watchlistcontainer.setStyleSheet("border: 2px solid black")
+        self.watchlistcontainer.layout().addWidget(self.watchlist)
+        self.watchlistcontainer.layout().addWidget(self.watchlistbutton)
 
         # button container search etc
         self.containerbtn_srh = QWidget()
@@ -142,6 +161,7 @@ class MyWindow(QMainWindow):
         self.containerr.layout().addWidget(self.containermsglb)
         self.containerr.layout().addWidget(self.containerttc)
         self.containerr.layout().addWidget(self.containerbtn_srh)
+        self.containerr.layout().addWidget(self.watchlistcontainer)
         self.containerr.layout().addWidget(self.containerbtn_sns)
 
         # timer
@@ -155,6 +175,7 @@ class MyWindow(QMainWindow):
         self.stopbutton.clicked.connect(self.scanner.closensave)
         self.stopbutton.clicked.connect(self.printstopnsave)
         self.stopbutton.clicked.connect(self.timerstart)
+        self.watchlistbutton.clicked.connect(self.readwatchlist)
         self.timer.timeout.connect(self.timerstop)
         # -----------------------------------------configure layout------------------------------------------
         layout = QHBoxLayout(centralwidget)
@@ -166,6 +187,16 @@ class MyWindow(QMainWindow):
         self.show()
 
     # -----------------------------------------slots------------------------------------------
+    def readwatchlist(self):
+        watchlist = self.watchlist.toPlainText().split('\n')
+        watchlist = list(watchlist)
+        #print(watchlist)
+        if watchlist[-1] == '':
+            watchlist.pop()
+        self.scanner.watchlist = watchlist
+        if DEBUG:
+            print(self.scanner.watchlist)
+
     def opencsvloc(self):
         subprocess.Popen(['explorer', r"" + os.path.dirname(os.path.realpath(__file__)) + "\csv"])
 

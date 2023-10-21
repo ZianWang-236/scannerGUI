@@ -18,6 +18,7 @@ class Scannerjob:
         self.ctrl = None
         self.csvwriter = None
         self.data = None
+        self.watchlist = list()
         self.chgky()
         self.csvname = self.getcsvname()
         self.currpath = self.getcurrpath()
@@ -125,7 +126,7 @@ class Scannerjob:
         if len(parcelId) < 5:
             self.play_sound("/sound/again.mp3")
         else:
-            if parcelId not in self.data and parcelId.isalnum():
+            if parcelId not in self.data and parcelId.isalnum() and parcelId not in self.watchlist:
                 try:
                     self.csvwriter.writerow([parcelId, datetime.datetime.now().strftime(CSVDATEFORMAT)])
                     self.csvfile.flush()
@@ -141,6 +142,9 @@ class Scannerjob:
             elif not parcelId.isalnum():
                 self.message = "Again"
                 self.play_sound("/sound/again.mp3")
+            elif parcelId in self.watchlist:
+                self.message = "Watchlist"
+                self.play_sound("/sound/alarm3.wav")
 
     def closensave(self):
         self.csvfile.flush()
