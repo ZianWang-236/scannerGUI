@@ -7,6 +7,27 @@ from PyQt6.QtCore import *
 from PyQt6.QtGui import *
 from model import *
 
+class CustomDialog(QDialog):
+    def __init__(self):
+        dlgfont = QFont()
+        dlgfont.setFamily("Arial")
+        dlgfont.setPointSize(16)
+        dlgfont.setBold(True)
+
+        super().__init__()
+        self.setWindowTitle("Set Successful!")
+        self.layout = QVBoxLayout()
+
+        self.message = QLabel("watchlist set successful")
+        self.message.setFont(dlgfont)
+
+        self.btn = QPushButton("OK")
+        self.btn.setFont(dlgfont)
+        self.btn.clicked.connect(self.done)
+
+        self.layout.addWidget(self.message)
+        self.layout.addWidget(self.btn)
+        self.setLayout(self.layout)
 
 class MyWindow(QMainWindow):
     def __init__(self):
@@ -22,7 +43,7 @@ class MyWindow(QMainWindow):
         self.setWindowTitle('Scanner')
         self.setMinimumSize(1035, 643)
         # self.setMaximumSize(1000, 800)
-        self.setGeometry(550, 220, 1035, 643)
+        # self.setGeometry(550, 220, 1035, 643)
 
         # set lable font configuration
         uifont = QFont()
@@ -59,7 +80,7 @@ class MyWindow(QMainWindow):
 
         # create display widget
         self.display = QTextEdit(self)
-        self.display.setText("----START!----")
+        self.display.setText("---------------START!---------------")
         self.display.setStyleSheet("background-color: #f3d8a2;")
         self.display.setFont(uifont)
         self.display.setReadOnly(True)
@@ -72,6 +93,7 @@ class MyWindow(QMainWindow):
 
         self.msgbox = QLabel()
         self.msgbox.setText("Messages")
+        self.msgbox.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.msgbox.setFont(uifontb)
 
         # total count label
@@ -176,7 +198,7 @@ class MyWindow(QMainWindow):
         self.stopbutton.clicked.connect(self.printstopnsave)
         self.stopbutton.clicked.connect(self.timerstart)
         self.watchlistbutton.clicked.connect(self.readwatchlist)
-        self.timer.timeout.connect(self.timerstop)
+        # self.timer.timeout.connect(self.timerstop)
         # -----------------------------------------configure layout------------------------------------------
         layout = QHBoxLayout(centralwidget)
         layout.setSpacing(20)
@@ -190,7 +212,8 @@ class MyWindow(QMainWindow):
     def readwatchlist(self):
         watchlist = self.watchlist.toPlainText().split('\n')
         watchlist = list(watchlist)
-        #print(watchlist)
+        dlg = CustomDialog()
+        dlg.exec()
         if watchlist[-1] == '':
             watchlist.pop()
         self.scanner.watchlist = watchlist
@@ -212,18 +235,18 @@ class MyWindow(QMainWindow):
         self.inputbox.clear()
 
     def printstopnsave(self):
-        self.display.append("----STOP AND SAVED!----")
+        self.display.append("---------------STOP AND SAVED!---------------")
         self.timerstart()
 
     def timerstart(self, time=20000 ):
         self.timer.start(time)
 
-    def timerstop(self):
-        self.timer.stop()
-        self.close()
+    # def timerstop(self):
+    #     self.timer.stop()
+    #     self.close()
 
     def printstart(self):
-        self.display.append("----START!----")
+        self.display.append("---------------START!---------------")
 
     def totalcount_update(self):
         count = len(self.scanner.data)

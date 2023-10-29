@@ -14,17 +14,18 @@ from const import *
 class Scannerjob:
     def __init__(self):
         self.message = "message"
+        self.msgrtn = -1
         self.csvfile = None
         self.ctrl = None
         self.csvwriter = None
         self.data = None
         self.watchlist = list()
-        self.chgky()
         self.csvname = self.getcsvname()
         self.currpath = self.getcurrpath()
         self.filepath = self.getfilename(self.csvname, self.currpath)
         self.mkdir(self.currpath)
         self.filestat = self.chkfile(self.filepath)
+        self.chgky()
 
     @staticmethod
     def slashformat(before: str) -> str:
@@ -48,6 +49,7 @@ class Scannerjob:
                 print("change keyboard result: " + str(result))
             return 0 # switch successful
         else:
+            self.play_sound("/sound/alarm3.wav ")
             return -1 # no workable language layout
 
     def gethistory(self, opt:int = 0):
