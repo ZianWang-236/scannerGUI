@@ -13,6 +13,7 @@ from const import *
 
 class Scannerjob:
     def __init__(self):
+        self.stat = True
         self.message = "message"
         self.msgrtn = -1
         self.csvfile = None
@@ -107,6 +108,7 @@ class Scannerjob:
         self.csvfile = open(self.filepath, self.ctrl, newline='')
         self.csvwriter = csv.writer(self.csvfile)
         self.message = "Start"
+        self.stat = True
         # self.csvwriter.writerow(self.getfields(self.filestat))
         self.play_sound("/sound/start.mp3")
         # return csvfile
@@ -128,16 +130,22 @@ class Scannerjob:
         if len(parcelId) < 5:
             self.play_sound("/sound/again.mp3")
         else:
-            if parcelId not in self.data and parcelId.isalnum() and parcelId not in self.watchlist:
+            if parcelId not in self.data and parcelId not in self.watchlist and parcelId.isalnum():
                 try:
-                    self.csvwriter.writerow([parcelId, datetime.datetime.now().strftime(CSVDATEFORMAT)])
+                    if parcelId.isnumeric() and len(parcelId) == SDLEN:
+                        self.csvwriter.writerow(['\'' + parcelId, datetime.datetime.now().strftime(CSVDATEFORMAT)])
+                        self.data.append('\'' + parcelId)
+                    elif parcelId.isalnum():
+                        self.csvwriter.writerow([parcelId.upper(), datetime.datetime.now().strftime(CSVDATEFORMAT)])
+                        self.data.append(parcelId)
                     self.csvfile.flush()
-                    self.data.append(parcelId)
                     self.message = "Next"
                     self.play_sound("/sound/next.mp3")
                 except:
                     self.message = "Exception!!!"
                     self.play_sound("/sound/exception.mp3")
+            # elif parcelId.isnumeric() and len(parcelId) >= 16:
+
             elif parcelId in self.data:
                 self.message = "Duplicate"
                 self.play_sound("/sound/duplicate.mp3")
@@ -151,6 +159,7 @@ class Scannerjob:
     def closensave(self):
         self.csvfile.flush()
         self.message = "Stop && Save"
+        self.stat = False
         self.play_sound("/sound/stopnsave.mp3")
         self.csvfile.close()
 
