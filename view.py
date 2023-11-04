@@ -10,6 +10,23 @@ from model import *
 from style import *
 
 
+class generaicDialog(QDialog):
+    def __init__(self, winttl, msg, btnmsg: str):
+        super().__init__()
+        self.setWindowTitle(winttl)
+        self.layout = QVBoxLayout()
+
+        self.message = QLabel(msg)
+        self.message.setFont(dlgfont)
+
+        self.btn = QPushButton(btnmsg)
+        self.btn.setFont(dlgfont)
+        self.btn.clicked.connect(self.done)
+
+        self.layout.addWidget(self.message)
+        self.layout.addWidget(self.btn)
+        self.setLayout(self.layout)
+
 class watchlistDialog(QDialog):
     def __init__(self):
         super().__init__()
@@ -55,7 +72,7 @@ class MyWindow(QMainWindow):
         centralwidget = QWidget(self)
         self.setCentralWidget(centralwidget)
         # create main window
-        self.setWindowTitle('Scanner')
+        self.setWindowTitle('Scanner V3.0')
         self.setMinimumSize(1035, 643)
         # self.setMaximumSize(1000, 800)
         # self.setGeometry(550, 220, 1035, 643)
@@ -85,7 +102,6 @@ class MyWindow(QMainWindow):
         self.inputbox.setPlaceholderText("Input Barcode Here")
         self.inputbox.setStyleSheet("background-color: #B3E5FC;")
         self.inputbox.setFont(uifont)
-        self.inputbox.selectAll()
 
         # create display widget
         self.display = QTextEdit(self)
@@ -231,11 +247,13 @@ class MyWindow(QMainWindow):
     def readwatchlist(self):
         watchlist = self.watchlist.toPlainText().split('\n')
         watchlist = list(watchlist)
-        dlg = watchlistDialog()
-        dlg.exec()
+        # dlg = watchlistDialog()
+        # dlg.exec()
         if watchlist[-1] == '':
             watchlist.pop()
         self.scanner.watchlist = watchlist
+        dlg = generaicDialog("Complete!", "Set Complete!\n " + str(len(self.scanner.watchlist)) + " Parcel ID added!", "OK")
+        dlg.exec()
         if DEBUG:
             print(self.scanner.watchlist)
 
@@ -279,17 +297,13 @@ class MyWindow(QMainWindow):
     def refreshbtn(self):
         if self.scanner.stat:
             self.startbutton.setEnabled(False)
-            # self.startbutton.setStyleSheet("background-color: #8c8c8c;")
+            self.stopbutton.setEnabled(True)
+            self.inputbox.setEnabled(True)
         else:
             self.startbutton.setEnabled(True)
-            # self.startbutton.setStyleSheet("background-color: #00d084;")
-
-        if self.scanner.stat:
-            self.stopbutton.setEnabled(True)
-            # self.stopbutton.setStyleSheet("background-color: #f44336;")
-        else:
+            self.inputbox.setEnabled(False)
             self.stopbutton.setEnabled(False)
-            # self.stopbutton.setStyleSheet("background-color: #8c8c8c;")
+
 
 
 if __name__ == '__main__':

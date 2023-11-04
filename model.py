@@ -135,12 +135,19 @@ class Scannerjob:
                     if parcelId.isnumeric() and len(parcelId) == SDLEN:
                         self.csvwriter.writerow(['\'' + parcelId, datetime.datetime.now().strftime(CSVDATEFORMAT)])
                         self.data.append('\'' + parcelId)
+                        self.message = "Next"
+                        self.play_sound("/sound/next.mp3")
+                    elif parcelId.isnumeric() and len(parcelId) < SDLEN:
+                        self.message = "Again"
+                        self.play_sound("/sound/again.mp3")
                     elif parcelId.isalnum():
                         self.csvwriter.writerow([parcelId.upper(), datetime.datetime.now().strftime(CSVDATEFORMAT)])
                         self.data.append(parcelId)
+                        self.message = "Next"
+                        self.play_sound("/sound/next.mp3")
                     self.csvfile.flush()
-                    self.message = "Next"
-                    self.play_sound("/sound/next.mp3")
+                    # self.message = "Next"
+                    # self.play_sound("/sound/next.mp3")
                 except:
                     self.message = "Exception!!!"
                     self.play_sound("/sound/exception.mp3")
