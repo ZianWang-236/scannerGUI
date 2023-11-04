@@ -6,7 +6,7 @@
 
 automated program that scan barcode and output data to csv file
 
-Download:  [release v2.0 beta](https://github.com/ZianWang-236/scannerGUI/releases/tag/V2.0)
+Download:  [release v3.0](https://github.com/ZianWang-236/scannerGUI/releases/tag/v3.0)
 
 
 ## functionality
