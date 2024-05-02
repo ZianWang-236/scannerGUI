@@ -8,6 +8,7 @@ from PyQt6.QtCore import *
 from PyQt6.QtGui import *
 from model import *
 from style import *
+from const import *
 
 
 class generaicDialog(QDialog):
@@ -61,6 +62,23 @@ class copyDiaglog(QDialog):
         self.layout.addWidget(self.btn)
         self.setLayout(self.layout)
 
+class confirmDiaglog(QDialog):
+    def __init__(self, scanner:Scannerjob):
+        super().__init__()
+        self.setWindowTitle("Delete Successful!")
+        self.layout = QVBoxLayout()
+
+        self.message = QLabel("Deleted Successful!")
+        self.message.setFont(dlgfont)
+
+        self.btn = QPushButton("OK")
+        self.btn.setFont(dlgfont)
+        self.btn.clicked.connect(self.done)
+
+        self.layout.addWidget(self.message)
+        self.layout.addWidget(self.btn)
+        self.setLayout(self.layout)
+
 class MyWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -92,9 +110,24 @@ class MyWindow(QMainWindow):
         opendir_action = QAction("Open program location", self)
         opendir_action.triggered.connect(self.openprogloc)
 
+        menu_setting = bar.addMenu('Settings')
+        chkbox_action = QWidgetAction(self)
+        chkbox_widget =QCheckBox('auto open CSV when stopped', self)
+        chkbox_widget.stateChanged.connect(self.chgCSVset)
+        chkbox_action.setDefaultWidget(chkbox_widget)
+
+        # menu_data = bar.addMenu('Data')
+        # del_id = QAction("delete specific ID", self)
+        # del_id.triggered.connect(self.delid)
+
+        menu_setting.addAction(chkbox_action)
+
+
         menu_file.addAction(opencsv_action)
         menu_file.addAction(opendir_action)
         menu_file.addAction(cpyall_action)
+
+        # menu_data.addAction(del_id)
 
         # -----------------------------------------LEFT widgets------------------------------------------
         # create input widget
@@ -156,7 +189,7 @@ class MyWindow(QMainWindow):
 
         # watch list input
         self.watchlist = QTextEdit()
-        self.watchlist.setPlaceholderText('Input watch list, seperate with RETURN')
+        self.watchlist.setPlaceholderText('Input watch list, seperate with ENTER')
         self.watchlist.setFont(uifont)
         self.watchlist.setStyleSheet("background-color: #B3E5FC;")
         self.watchlist.setCursorWidth(5)
@@ -165,6 +198,16 @@ class MyWindow(QMainWindow):
         self.watchlistbutton = QPushButton('Confirm Watchlist')
         self.watchlistbutton.setStyleSheet(cfmtbtn)
         self.watchlistbutton.setFont(uifont)
+
+        # delid input
+        self.delidInput = QLineEdit(self)
+        self.delidInput.setPlaceholderText("DELETE Parcel ID")
+        self.delidInput.setStyleSheet("background-color: #B3E5FC;")
+        self.delidInput.setFont(uifont)
+
+        self.delidbutton = QPushButton('DELETE')
+        self.delidbutton.setStyleSheet(delidbtn)
+        self.delidbutton.setFont(uifont)
 
         # -----------------------------------------containers------------------------------------------
         # msg container
@@ -195,6 +238,14 @@ class MyWindow(QMainWindow):
         self.containerbtn_srh.layout().addWidget(self.searchin)
         self.containerbtn_srh.layout().addWidget(self.search)
 
+        # delid container
+        self.delidcontainer = QWidget()
+        self.delidcontainer.setLayout(QVBoxLayout())
+        self.delidcontainer.setStyleSheet("border: 2px solid black")
+        self.delidcontainer.layout().addWidget(self.delidInput)
+        self.delidcontainer.layout().addWidget(self.delidbutton)
+
+
         # button container start and stop
         self.containerbtn_sns = QWidget()
         self.containerbtn_sns.setLayout(QHBoxLayout())
@@ -217,6 +268,7 @@ class MyWindow(QMainWindow):
         self.containerr.layout().addWidget(self.containerttc)
         # self.containerr.layout().addWidget(self.containerbtn_srh)
         self.containerr.layout().addWidget(self.watchlistcontainer)
+        self.containerr.layout().addWidget(self.delidcontainer)
         self.containerr.layout().addWidget(self.containerbtn_sns)
 
         # timer
@@ -234,6 +286,7 @@ class MyWindow(QMainWindow):
         self.stopbutton.clicked.connect(self.printstopnsave)
         self.stopbutton.clicked.connect(self.refreshbtn)
         self.watchlistbutton.clicked.connect(self.readwatchlist)
+        self.delidbutton.clicked.connect(self.delid)
         # -----------------------------------------configure layout------------------------------------------
         layout = QHBoxLayout(centralwidget)
         layout.setSpacing(20)
@@ -294,6 +347,25 @@ class MyWindow(QMainWindow):
         dlg = copyDiaglog(self.scanner)
         dlg.exec()
 
+    def delid(self):
+        print("button clicked")
+        delid = self.delidInput.text().strip("\n")
+        print("id got: " + delid)
+        print("scanner data: " + str(self.scanner.data))
+        res = False
+        if delid in self.scanner.data:
+            res = self.scanner.delid(delid)
+        if res == True:
+            dlg = generaicDialog("Delete success!", "Delete success!","OK")
+            dlg.exec()
+        else:
+            dlg = generaicDialog("Delete Fail!", "Id not in system", "OK")
+            dlg.exec()
+
+
+
+
+
     def refreshbtn(self):
         if self.scanner.stat:
             self.startbutton.setEnabled(False)
@@ -303,6 +375,10 @@ class MyWindow(QMainWindow):
             self.startbutton.setEnabled(True)
             self.inputbox.setEnabled(False)
             self.stopbutton.setEnabled(False)
+
+    def chgCSVset(self):
+        self.scanner.autoopencsv = False if self.scanner.autoopencsv else True
+
 
 
 

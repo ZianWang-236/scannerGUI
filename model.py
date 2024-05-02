@@ -1,5 +1,5 @@
 import time
-
+import subprocess
 import csv
 import datetime
 import os
@@ -8,18 +8,20 @@ from win32con import WM_INPUTLANGCHANGEREQUEST
 import win32gui
 import win32api
 
+
 from const import *
 
 
 class Scannerjob:
     def __init__(self):
+        self.autoopencsv = False
         self.stat = True
         self.message = "message"
         self.msgrtn = -1
         self.csvfile = None
         self.ctrl = None
         self.csvwriter = None
-        self.data = None
+        self.data = list()
         self.watchlist = list()
         self.csvname = self.getcsvname()
         self.currpath = self.getcurrpath()
@@ -27,6 +29,7 @@ class Scannerjob:
         self.mkdir(self.currpath)
         self.filestat = self.chkfile(self.filepath)
         self.chgky()
+        self.delflag = False
 
     @staticmethod
     def slashformat(before: str) -> str:
@@ -62,6 +65,21 @@ class Scannerjob:
                 ls.append(time.strptime(filename.strip('.csv'), '%Y-%m-%d'))
                 print(time.strptime(filename.strip('.csv'), '%Y-%m-%d'))
         print(((time.mktime(ls[-1]) - time.mktime(ls[0]))//(3600*24)))
+
+    # check if buffered time and current time are the same, if not pop up for restart
+    def chkTdiff(self):
+        pass
+
+    def delid(self, id:str) -> bool:
+        print("func activate")
+        print("self.data: " + str(self.data))
+        if id.strip("\n") in self.data:
+            self.data.remove(id.strip("\n"))
+            self.play_sound("/sound/success.wav ")
+            return True
+        else:
+            # self.play_sound("/sound/fail.wav ")
+            return False
 
     # datetime
     def getcsvname(self) -> str:
@@ -155,7 +173,7 @@ class Scannerjob:
 
             elif parcelId in self.data:
                 self.message = "Duplicate"
-                self.play_sound("/sound/duplicate.mp3")
+                self.play_sound("/sound/next.mp3")
             elif not parcelId.isalnum():
                 self.message = "Again"
                 self.play_sound("/sound/again.mp3")
@@ -169,6 +187,9 @@ class Scannerjob:
         self.stat = False
         self.play_sound("/sound/stopnsave.mp3")
         self.csvfile.close()
+        if self.autoopencsv:
+            subprocess.Popen(['explorer', r"" + os.path.dirname(os.path.realpath(__file__)) + "\csv"])
+
 
 
 if __name__ == '__main__':

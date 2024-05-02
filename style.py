@@ -17,6 +17,7 @@ uifontb.setFamily("Arial")
 uifontb.setPointSize(20)
 uifontb.setBold(True)
 
+
 startbtn = """
             QPushButton {
                 background-color: #47d147;
@@ -25,7 +26,7 @@ startbtn = """
                 font-size: 30px;
                 font-weight: bold;
                 border: 2px solid #adebad;
-                border-radius: 5px;
+                border-radius: 10px;
             }
             QPushButton:hover {
                 background-color: #84e184;
@@ -34,7 +35,7 @@ startbtn = """
                 font-size: 32px;
                 font-weight: bold;
                 border: 2px solid #46d246;
-                border-radius: 5px;
+                border-radius: 10px;
             }
             QPushButton:disabled {
                 background-color: #8c8c8c;
@@ -43,7 +44,7 @@ startbtn = """
                 font-size: 30px;
                 font-weight: bold;
                 border: 2px solid #4d4d4d;
-                border-radius: 5px;
+                border-radius: 10px;
             }
             """
 
@@ -55,7 +56,7 @@ stoptbtn = """
                 font-size: 30px;
                 font-weight: bold;
                 border: 2px solid #ff3333;
-                border-radius: 5px;
+                border-radius: 10px;
             }
             QPushButton:hover {
                 background-color: #ff4d4d;
@@ -64,7 +65,7 @@ stoptbtn = """
                 font-size: 32px;
                 font-weight: bold;
                 border: 2px solid #e60000;
-                border-radius: 5px;
+                border-radius: 10px;
             }
             QPushButton:disabled {
                 background-color: #8c8c8c;
@@ -73,7 +74,7 @@ stoptbtn = """
                 font-size: 30px;
                 font-weight: bold;
                 border: 2px solid #4d4d4d;
-                border-radius: 5px;
+                border-radius: 10px;
             }
             """
 
@@ -85,7 +86,7 @@ cfmtbtn = """
                 font-size: 30px;
                 font-weight: bold;
                 border: 2px solid #fab7c8;
-                border-radius: 5px;
+                border-radius: 10px;
             }
             QPushButton:hover {
                 background-color: #f8a0b6;
@@ -94,6 +95,27 @@ cfmtbtn = """
                 font-size: 32px;
                 font-weight: bold;
                 border: 2px solid #f57091;
-                border-radius: 5px;
+                border-radius: 10px;
+            }
+            """
+
+delidbtn = """
+            QPushButton {
+                background-color: #fd971f;
+                color: Black;
+                font-family: Arial;
+                font-size: 30px;
+                font-weight: bold;
+                border: 2px solid #fab7c8;
+                border-radius: 10px;
+            }
+            QPushButton:hover {
+                background-color: #fdae52;
+                color: Black;
+                font-family: Arial;
+                font-size: 32px;
+                font-weight: bold;
+                border: 2px solid #f57091;
+                border-radius: 10px;
             }
             """
